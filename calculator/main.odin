@@ -8,9 +8,12 @@ main :: proc() {
 	buf: [256]byte
 	n1 := get_input("Enter the first number: ")
 	num1 := strconv.atof(n1)
-	fmt.println("Enter the operation (+, -, *, /): ")
+	fmt.println("Enter the operation (+, -, *, /, !): ")
 	operation, _ := os.read(os.stdin, buf[:])
-	n2 := get_input("Enter the second number: ")
+	n2 := ""
+	if strings.trim_space(string(buf[:operation-1])) != "!" {
+		n2 = get_input("Enter the second number: ")
+	}
 	num2 := strconv.atof(n2)
 	result: f64
 	switch strings.trim_space(string(buf[:operation-1])) {
@@ -22,6 +25,8 @@ main :: proc() {
 		result = multiply(num1, num2)
 	case "/":
 		result = divide(num1, num2)
+	case "!":
+		result = factorial(num1)
 	case:
 		fmt.println("Invalid operation")
 	}
@@ -44,4 +49,15 @@ multiply :: proc(a, b: f64) -> f64 {
 }
 divide :: proc(a, b: f64) -> f64 {
 	return a / b
+}
+factorial :: proc(a: f64) -> f64 {
+	if a < 0 {
+		return 0
+	}
+	result := 1.0
+	i: f64
+	for i = 1; i <= a; i += 1 {
+		result *= i
+	}
+	return result
 }

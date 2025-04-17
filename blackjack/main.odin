@@ -32,8 +32,8 @@ Card :: struct {
 create_card :: proc(card: ^Card) -> Card {
     return Card{card.rank, card.suit}
 }
-new_deck :: proc() -> [52]Card {
-    deck: [52]Card
+new_deck :: proc() -> [dynamic]Card {
+    deck := make([dynamic]Card)
     card: Card
     idx := 0
     for suit in Suit {
@@ -93,20 +93,49 @@ play :: proc() {
     }
 }
 deal_card :: proc() -> Card {
-    card := unordered_remove(&deck)
+    card := pop(&deck)
 
     return card
 }
-calculate_score :: proc(cards: []int) -> int {
+get_card_value :: proc(card: ^Card) -> int {
+    switch card.rank {
+        case Rank.Two:
+            return 2
+        case Rank.Three:
+            return 3
+        case Rank.Four:
+            return 4
+        case Rank.Five:
+            return 5
+        case Rank.Six:
+            return 6
+        case Rank.Seven:
+            return 7
+        case Rank.Eight:
+            return 8
+        case Rank.Nine:
+            return 9
+        case Rank.Ten, Rank.Jack, Rank.Queen, Rank.King:
+            return 10
+        case Rank.Ace:
+            return 11
+        case:
+            return 0
+    }
+}
+calculate_score :: proc(cards: []Card) -> int {
     sum: int
+    card_value: int
     for i := 0; i < len(cards); i += 1 {
-        sum += cards[i]
+        card_value = get_card_value(&cards[i])
+        sum += card_value
     }
     if sum == 21 && len(cards) == 2 {
         return 0
     }
     for &card in cards {
-        if card == 11 && sum > 21 {
+        card_value = get_card_value(&card)
+        if card_value == 11 && sum > 21 {
         sum -= 10
         }
     }

@@ -35,12 +35,10 @@ create_card :: proc(card: ^Card) -> Card {
 new_deck :: proc() -> [dynamic]Card {
     deck := make([dynamic]Card)
     card: Card
-    idx := 0
     for suit in Suit {
         for rank in Rank {
             card = Card{rank, suit}
-            deck[idx] = create_card(&card)
-            idx += 1
+            append(&deck, create_card(&card))
         }
     }
     return deck
@@ -165,7 +163,7 @@ main :: proc() {
     buf: [256]byte
     i, _ := os.read(os.stdin, buf[:])
     play_game := strings.trim_space(string(buf[:i-1]))
-    if play_game == "yes" {
+    if play_game == "yes" || play_game == "y" {
         play()
     }
 }

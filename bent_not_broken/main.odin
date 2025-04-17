@@ -3,6 +3,7 @@ import rl "vendor:raylib"
 Vec2i :: [2]int
 position: Vec2i
 move_direction: Vec2i
+move_speed: int = 5
 Player :: struct {
     x: int,
     y: int,
@@ -17,8 +18,8 @@ main :: proc() {
     }
     // Main game loop
     for !rl.WindowShouldClose() {
-        if rl.IsGamepadButtonPressed(0, .LEFT_FACE_RIGHT) {
-            player.x += 1
+        if rl.IsGamepadButtonDown(0, .LEFT_FACE_RIGHT) {
+            player.x += move_speed
         }
         rl.BeginDrawing()
         defer rl.EndDrawing()

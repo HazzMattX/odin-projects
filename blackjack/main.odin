@@ -4,20 +4,52 @@ import "core:math/rand"
 import "core:os"
 import "core:mem"
 import "core:strings"
-
-main :: proc() {
-    fmt.println("Do you want to play Blackjack?")
-    buf: [256]byte
-    i, _ := os.read(os.stdin, buf[:])
-    play_game := strings.trim_space(string(buf[:i-1]))
-    if play_game == "yes" {
-        play()
-    }
+Suit :: enum {
+    Hearts,
+    Diamonds,
+    Spades,
+    Clubs,
 }
+Rank :: enum {
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Ten,
+    Jack,
+    Queen,
+    King,
+    Ace,
+}
+Card :: struct {
+    rank: Rank,
+    suit: Suit,
+}
+create_card :: proc(card: ^Card) -> Card {
+    return Card{card.rank, card.suit}
+}
+new_deck :: proc() -> [52]Card {
+    deck: [52]Card
+    card: Card
+    idx := 0
+    for suit in Suit {
+        for rank in Rank {
+            card = Card{rank, suit}
+            deck[idx] = create_card(&card)
+            idx += 1
+        }
+    }
+    return deck
+}
+deck := new_deck();
 play :: proc() {
     fmt.println("Welcome to Blackjack!")
-    user_cards := make([dynamic]int)
-    dealer_cards := make([dynamic]int)
+    user_cards := make([dynamic]Card)
+    dealer_cards := make([dynamic]Card)
     user_score: int
     dealer_score: int
     playing := true
@@ -60,9 +92,9 @@ play :: proc() {
         play()
     }
 }
-deal_card :: proc() -> int {
-    cards := [13]int {11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10}
-        card := rand.choice(cards[:])
+deal_card :: proc() -> Card {
+    card := unordered_remove(&deck)
+
     return card
 }
 calculate_score :: proc(cards: []int) -> int {
@@ -96,5 +128,15 @@ compare :: proc(ys, hs: int) -> string {
             return "You win!"
         case:
             return "You lose!"
+    }
+}
+
+main :: proc() {
+    fmt.println("Do you want to play Blackjack?")
+    buf: [256]byte
+    i, _ := os.read(os.stdin, buf[:])
+    play_game := strings.trim_space(string(buf[:i-1]))
+    if play_game == "yes" {
+        play()
     }
 }

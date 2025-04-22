@@ -6,7 +6,7 @@ import rl "vendor:raylib"
 Vec2i :: [2]int
 position: Vec2i
 move_speed: int = 5
-max_speed: int = 20
+max_speed: int = 30
 moving: bool
 
 Player :: struct {
